@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request
-
+import numpy as np
+import pandas as pd
+import bs4 as bs
 
 app = Flask(__name__)
+
 
 @app.route("/")
 @app.route("/home")
