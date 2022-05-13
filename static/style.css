@@ -3,3 +3,11 @@
 	background-color: #181818;
 	font-family: 'Noto Sans JP', sans-serif;
 }
+
+/* Autocomplete Jquery */
+.autoComplete_result{
+	color: black;
+}
+.autoComplete_highlighted{
+	color: rgb(116, 116, 207);
+}
