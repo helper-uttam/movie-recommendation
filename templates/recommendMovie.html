@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Recommending Movie</title>
+	<title>NEW</title>
 
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="shortcut icon" href="../static/logo.jpg" type="image/x-icon">
 
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
@@ -17,11 +16,44 @@
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+  <!-- CSS -->
 	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
 
 </head>
 
-<body>
-	<h1>Recommendation Page</h1>
+<body id="content">
+	<div class="results">
+    <div style="text-align: center;">
+	      <h2  style="color:white;">{{title}}</h2>
+    </div>
+	</div>
+	<br>
+
+<div id="mycontent">
+    <div id="mcontent">
+      <div class="poster-lg">
+        <img class="poster" style="border-radius: 40px;margin-left: 90px;" height="400" width="250" src={{poster}}>
+      </div>
+      <div class="poster-sm text-center">
+        <img class="poster" style="border-radius: 40px;margin-bottom: 5%;" height="400" width="250" src={{poster}}>
+      </div>
+      <center>
+      <div id="details">
+        <br/>
+        <h6>TITLE: &nbsp;{{title}}</h6>
+        <h6 style="color:white;">OVERVIEW: <br/><br/><center>{{overview}}</center></h6>
+        <h6 style="color:white;">RATING: &nbsp;{{vote_average}}/10 ({{vote_count}} votes)</h6>
+        <h6 style="color:white;">GENRE: &nbsp;{{genres}}</h6>
+        <h6 style="color:white;">RELEASE DATE: &nbsp;{{release_date}}</h6>
+        <h6 style="color:white;">RUNTIME: &nbsp;{{runtime}}</h6>
+        <h6 style="color:white;">STATUS: &nbsp;{{status}}</h6>
+      </div>
+    </center>
+    </div>
+</div>
+<br/>
+  
+  <script type="text/javascript" src="{{url_for('static', filename='recommend.js')}}"></script>
+  
 </body>
 </html>

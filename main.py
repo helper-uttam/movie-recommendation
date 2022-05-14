@@ -35,16 +35,21 @@ def getRecommendedMoviesTitles(mov):
         lst = lst[1:11] # excluding the first item because it is the requested movie itself
         finalList = []
         for i in range(len(lst)):
-            item = finalList[i][0]
+            item = lst[i][0]
             finalList.append(data['movie_title'][item])
         return finalList
-    
+
+# converting list of string to list (eg. "["abc","def"]" to ["abc","def"])
+def stringToList(my_list):
+    my_list = my_list.split('","')
+    my_list[0] = my_list[0].replace('["','')
+    my_list[-1] = my_list[-1].replace('"]','')
+    return my_list    
 
 @app.route("/createsimilarity",methods=["POST"])
 def get_similarity():
-    movie = request.form['title']
-    recommended_movie_titles = getRecommendedMoviesTitles(movie)
-    print(recommended_movie_titles)
+    title = request.form['title']
+    recommended_movie_titles = getRecommendedMoviesTitles(title)
     if type(recommended_movie_titles)==type('string'):
         return recommended_movie_titles
     else:
@@ -59,9 +64,59 @@ def home():
     return render_template('home.html',movies=movies)
 
 
-@app.route("/recommend",methods=["POST"])
+@app.route("/recommendmovies",methods=["POST"])
 def recommend():
-    return render_template('recommendMovie.html')
+    # getting data from AJAX request
+    title = request.form['title']
+    cast_ids = request.form['cast_ids']
+    cast_names = request.form['cast_names']
+    cast_characters = request.form['cast_characters']
+    cast_bdays = request.form['cast_bdays']
+    cast_bios = request.form['cast_bios']
+    cast_places = request.form['cast_places']
+    cast_profiles = request.form['cast_profiles']
+    imdb_id = request.form['imdb_id']
+    poster = request.form['poster']
+    genres = request.form['genres']
+    overview = request.form['overview']
+    vote_average = request.form['rating']
+    vote_count = request.form['vote_count']
+    release_date = request.form['release_date']
+    runtime = request.form['runtime']
+    status = request.form['status']
+    rec_movies = request.form['rec_movies']
+    rec_posters = request.form['rec_posters']
+
+
+    # call the stringToList function for every string that needs to be converted to list
+    rec_movies = stringToList(rec_movies)
+    rec_posters = stringToList(rec_posters)
+    cast_names = stringToList(cast_names)
+    cast_characters = stringToList(cast_characters)
+    cast_profiles = stringToList(cast_profiles)
+    cast_bdays = stringToList(cast_bdays)
+    cast_bios = stringToList(cast_bios)
+    cast_places = stringToList(cast_places)
+    
+    # converting string to list (eg. "[a,b,c]" to [a,b,c])
+    cast_ids = cast_ids.split(',')
+    cast_ids[0] = cast_ids[0].replace("[","")
+    cast_ids[-1] = cast_ids[-1].replace("]","")
+    
+    # rendering the string to python string
+    for i in range(len(cast_bios)):
+        cast_bios[i] = cast_bios[i].replace(r'\n', '\n').replace(r'\"','\"')
+    
+    # to preserve the order of information and make it easier to process inside html file, combining all the list as dict
+    movie_cards = {rec_posters[i]: rec_movies[i] for i in range(len(rec_posters))}
+    
+    casts = {cast_names[i]:[cast_ids[i], cast_characters[i], cast_profiles[i]] for i in range(len(cast_profiles))}
+    
+    cast_details = {cast_names[i]:[cast_ids[i], cast_profiles[i], cast_bdays[i], cast_places[i], cast_bios[i]] for i in range(len(cast_places))}
+ 
+    return render_template('recommendMovie.html',title=title, casts=casts, overview=overview, poster=poster,
+        vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
+        movie_cards=movie_cards,cast_details=cast_details)
 
 if __name__ == '__main__':
     app.run(debug=True)
