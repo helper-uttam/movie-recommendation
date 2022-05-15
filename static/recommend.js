@@ -247,3 +247,11 @@ function get_individual_cast(movie_cast,my_api_key) {
   }
   return {cast_bdays:cast_bdays,cast_bios:cast_bios,cast_places:cast_places};
 }
+
+
+// when clicked on any of the recommended movies
+function recommendSimilarMovies(e){
+  var API_KEY = '97933c59065a2f21b4f313c8ef927b47';
+  var title_of_movie = e.getAttribute('title'); 
+  searchMovie(API_KEY,title_of_movie);
+}
