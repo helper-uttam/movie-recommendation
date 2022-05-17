@@ -2,8 +2,26 @@ from flask import Flask, render_template, request
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import pymongo
+import json
+from bson.objectid import ObjectId
+
 
 app = Flask(__name__)
+
+
+#######
+try:
+    mongo = pymongo.MongoClient(
+        host="localhost",
+        port=27017,
+        serverSelectionTimeoutMS = 1000
+    )
+    db = mongo.user
+    mongo.server_info()
+except:
+    print("Can not connect to database")
+#######
 
 def get_movies():
     orig_data = pd.read_csv('./datasets/processedData_2017.csv')
@@ -116,6 +134,84 @@ def recommend():
     return render_template('recommendMovie.html',title=title, casts=casts, overview=overview, poster=poster,
         vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
         movie_cards=movie_cards,cast_details=cast_details)
+
+
+# MongoDB routes
+
+@app.route("/signup", methods=["POST"])
+def create_user():
+    try:
+        user = {
+            "name":request.form["username"]
+            }
+        dbResponse = db.user.insert_one(user)
+        print(dbResponse.inserted_id)
+        # for attr in dir(dbResponse):
+        #     print(attr)
+        return json.dumps({
+            "message":"Data Inserted",
+            "MessageID":f"{dbResponse.inserted_id}",
+            "username":request.form["username"], 
+        })
+    except:
+        return json.dumps({
+            "message":"Can not add records!"
+        })
+
+
+@app.route("/users", methods=["GET"])
+def findUser():
+    try:
+        data = list(db.user.find())
+
+        # converting dtype (ObjectID -> String)
+        for user in data:
+            user["_id"] = str(user["_id"])
+
+        return json.dumps({
+            "data " : data
+        })
+    except:
+        return json.dumps({
+            "message":"Can not find records!"
+        })
+
+@app.route("/user/<id>", methods=["PATCH"])
+def update_user(id):
+    try:
+        dbResponse = db.users.update_one(
+            {"_id":ObjectId(id)}, #previous  
+            {"$set":{"username":request.form["username"]}} #after updating
+        )
+        if dbResponse.modified_count == 1:
+            return json.dumps({
+                "message":"Successfuly updated"
+            })
+        else:
+            return json.dumps({
+                "message":"Nothing to update"
+            })
+    except:
+        return json.dumps({
+            "message":"Can not update records!"
+        })
+
+
+@app.route("/user/<id>", methods=["DELETE"])
+def delete_user(id):
+    print(ObjectId(id))
+    try:
+        dbResponse = db.users.delete_one(
+            {"_id":ObjectId(id)},   
+        )
+        return json.dumps({
+            "message":"Successfuly Deleted"
+        })
+    except Exception as e:
+        print(e)
+        return json.dumps({
+            "message":"Can not delete records!"
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
