@@ -15,14 +15,13 @@
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-  
+ 
   <!-- Auto Complete CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/css/autoComplete.min.css">
 
   <!-- CSS -->
   <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
-
+  
 </head>
 
 <body id="content" style="font-family: 'Noto Sans JP', sans-serif;">
@@ -31,6 +30,30 @@
     var movies = {{movies|tojson}};
   </script>
 
+   <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="/">Movie Recommendation System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav" style="color:white;">
+        <div style="display: flex; justify-content: space-evenly; width: 30vw; cursor: pointer;">
+          <li class="nav-item active" value="102382">
+            Action
+          </li>
+          <li class="nav-item active" value="240832">
+            Science Fiction
+          </li>
+          <li class="nav-item active" value="11977">
+            Comedy/Drama
+          </li>
+        </div>
+      </ul>
+    </div>
+  </nav>
+  <!-- Navbar Ends -->
+
+  <!-- input and search Button -->
 	<div class="ml-container" style="display: block; margin-top: 15%;">
     <div style="text-align: center;">
       <h1>Search For Movie</h1>
@@ -38,26 +61,33 @@
     <br>
     <center>
     <div class="form-group shadow-textarea" style="margin-top: 50px; color: white;">
-      <input type="text" name="movie" class="input form-control " id="autoComplete" autocomplete="off" placeholder="Enter the Movie Name" style="background-color: #ffffff;border-color:#ffffff;width: 50%; height:60px; color: #181818" required="required" />
-      <br>
-      <div class="form-group">
-        <button class="btn btn-primary btn-block btn-lg search-button" style="background-color: #143193;text-align: center;border-color: #143193;width:120px;" disabled="true" >Enter</button><br><br>
-      </div>
+      <input type="text" name="movie" class="input form-control " id="autoComplete" placeholder="Enter the Movie Name" style="background-color: #ffffff;border-color:#ffffff;width: 50%; height:60px; color: #181818" required="required" />
+      <button class="btn btn-block btn-lg search-button" style="background-color: #143193;text-align: center;border-color: #143193;width:120px;" disabled="true" >Enter</button><br><br>
     </div>
   </center>
-  <div id="loader" class="text-center">
+  <!-- input and search Button ends -->
+
+  <!-- loader -->
+  <div id="loader" style="display: none;">
+    <img src="../static/loader.gif"/>
   </div>
+
+  <!-- after unsuccessful search -->
   <div class="failed" style="display: none;">
     <div style="text-align: center;">
       <h3 style="margin-top: 10%;" class="alert alert-dark">Sorry! We could not able to process your request at the moment.</h3>
     </div>
   </div>
+  <!-- after unsuccessful search ends-->
 
+
+  <!-- after successful search -->
 	<div class="success">
     <div style="text-align: center;">
       <h2 id="name" class="text-uppercase"></h2>
     </div>
 	</div>
+  <!-- after successful search  end -->
 
   <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='autocomplete.js')}}"></script>

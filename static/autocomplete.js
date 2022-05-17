@@ -2,10 +2,7 @@ new autoComplete({
     data: {                             
       src: movies,
     },
-    selector: "#autoComplete",           
-    threshold: 2,                        
-    debounce: 100,                       
-    searchEngine: "strict",              
+    selector: "#autoComplete",                        
     resultsList: {                      
         render: true,
         container: source => {

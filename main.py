@@ -75,7 +75,6 @@ def recommend():
     cast_bios = request.form['cast_bios']
     cast_places = request.form['cast_places']
     cast_profiles = request.form['cast_profiles']
-    imdb_id = request.form['imdb_id']
     poster = request.form['poster']
     genres = request.form['genres']
     overview = request.form['overview']

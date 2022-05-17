@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
   const inputField = document.getElementById('autoComplete');
   const inputHandler = function(e) {
     if(e.target.value == ""){
@@ -19,13 +18,13 @@ $(document).ready(function() {
       $('.failed').css('display','block');
     }
     else{
-      searchMovie(API_KEY,entered_title);
+      searchMovieWithTitle(API_KEY,entered_title);
     }
   });
 });
 
 
-function searchMovie(API_KEY,title){
+function searchMovieWithTitle(API_KEY,title){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/search/movie?api_key='+API_KEY+'&query='+title,
@@ -44,11 +43,42 @@ function searchMovie(API_KEY,title){
         $('.success').delay(1000).css('display','block');
         var id = movie.results[0].id; // fetching the first element of thr response array, to be more accurate
         var title = movie.results[0].original_title;
+        console.log(id);
         getSimilarMovies(title,id,API_KEY);
       }
     },
     error: function(){
-      console.log('Something went wrong in searchMovie func');
+      console.log('Something went wrong in searchMovieWithTitle func');
+      $("#loader").delay(400).fadeOut();
+    },
+  });
+}
+
+
+function searchMovieWithCategory(API_KEY,id){
+  $.ajax({
+    type: 'GET',
+    url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
+
+    success: function(movie){
+      //  if we didn't get any movie details to show
+      if(movie.length<1){
+        $('.failed').css('display','block');
+        $('.success').css('display','none');
+        $("#loader").delay(400).fadeOut();
+      }
+      // if we got some movies to show
+      else{
+        $("#loader").fadeIn();
+        $('.failed').css('display','none');
+        $('.success').delay(1000).css('display','block');
+        var id = movie.id; 
+        var title = movie.original_title;
+        getSimilarMovies(title,id,API_KEY);
+      }
+    },
+    error: function(){
+      console.log('Something went wrong in searchMovieWithTitle func');
       $("#loader").delay(400).fadeOut();
     },
   });
@@ -253,5 +283,12 @@ function get_individual_cast(movie_cast,my_api_key) {
 function recommendSimilarMovies(e){
   var API_KEY = '97933c59065a2f21b4f313c8ef927b47';
   var title_of_movie = e.getAttribute('title'); 
-  searchMovie(API_KEY,title_of_movie);
+  searchMovieWithTitle(API_KEY,title_of_movie);
 }
+
+
+// when clicked on any items on navbar 
+$('.nav-item').on('click',function(e){
+  let selectedItem = e.target.getAttribute('value');
+  searchMovieWithCategory('97933c59065a2f21b4f313c8ef927b47', selectedItem)
+});
