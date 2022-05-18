@@ -7,6 +7,15 @@
 	font-family: 'Noto Sans JP', sans-serif;
 	width: 100vw;
 }
+input.checkbox {
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+}
+.label{
+	font-size: 2rem;
+}  
+
 .container{
 	text-align: center;
 	color: white;
@@ -89,7 +98,7 @@ h1 {
 
 h1 {
     font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #143193;
+    color: white;
     font-weight: bold;
     margin-top: 30px;
     text-shadow: #000000 0px 0px 13px;
@@ -110,7 +119,7 @@ h6 {
 }
 
 @media only screen and (max-width: 650px) {
-    #mcontent {
+    #recom_Container {
       display: block;
     }
     .poster-large {
@@ -178,7 +187,7 @@ h6 {
     display: none;
    }
 
-	#mcontent {
+	#recom_Container {
 		display: flex;
 		flex-wrap: nowrap;
 	}

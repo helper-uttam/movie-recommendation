@@ -72,14 +72,10 @@
     <img src="../static/loader.gif"/>
   </div>
 
-  <!-- after unsuccessful search -->
-  <div class="failed" style="display: none;">
-    <div style="text-align: center;">
-      <h3 style="margin-top: 10%;" class="alert alert-dark">Sorry! We could not able to process your request at the moment.</h3>
-    </div>
+  <!-- movies recommended on home screen -->
+  <div class="prerecommend">
+    <center><h1>According to your choices!</h1></center>
   </div>
-  <!-- after unsuccessful search ends-->
-
 
   <!-- after successful search -->
 	<div class="success">
@@ -88,6 +84,14 @@
     </div>
 	</div>
   <!-- after successful search  end -->
+
+  <!-- after unsuccessful search -->
+  <div class="failed" style="display: none;">
+    <div style="text-align: center;">
+      <h3 style="margin-top: 10%;" class="alert alert-dark">Oops! We couldn't recommend similar movies. Try with something else :)</h3>
+    </div>
+  </div>
+  <!-- after unsuccessful search ends-->
 
   <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
   <script type="text/javascript" src="{{url_for('static', filename='autocomplete.js')}}"></script>

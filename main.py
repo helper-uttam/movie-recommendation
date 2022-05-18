@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from operator import index
+from flask import Flask, render_template, request, session
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -9,11 +10,10 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
-# for session
-app.secret_key = b'_5#hh"F4Q8z\n\xec]/'
 
+####### Connecting Database (MongoDB) #####
+##############################################
 
-####### Connecting Database (MongoDB)
 try:
     mongo = pymongo.MongoClient(
         host="localhost",
@@ -24,7 +24,9 @@ try:
     mongo.server_info()
 except:
     print("Can not connect to database")
-#######
+
+#######################################
+#######################################
 
 def get_movies():
     orig_data = pd.read_csv('./datasets/processedData_2017.csv')
@@ -44,11 +46,11 @@ def getRecommendedMoviesTitles(mov):
     try:
         data.head()
         similarity.shape
-    except:
+    except Exception as ex:
         data, similarity = create_similarity()
     # if the movie title that we are quering in createsimilarity didn't matched with any movie in our dataset
     if mov not in data['movie_title'].unique():
-        return('Sorry! Your request can not be completed at the movement. Please check if you spelt everything correctly or try with some other movies')
+        return("Not present in CSV file")
     else:
         i = data.loc[data['movie_title']==mov].index[0]
         lst = list(enumerate(similarity[i])) #indexing each similarity 
@@ -60,7 +62,6 @@ def getRecommendedMoviesTitles(mov):
             finalList.append(data['movie_title'][item])
         return finalList
 
-# converting list of string to list (eg. "["abc","def"]" to ["abc","def"])
 def stringToList(my_list):
     my_list = my_list.split('","')
     my_list[0] = my_list[0].replace('["','')
@@ -81,70 +82,72 @@ def get_similarity():
 @app.route("/home")
 def home():
     movies = get_movies()
-    return render_template('home.html',movies=movies)
+    return render_template('home.html',movies=movies) # passing all the name of movies from our dataset to feed jQuery autocomplete feature
 
 
 @app.route("/recommendmovies",methods=["POST"])
 def recommend():
-    # getting data from AJAX request
-    title = request.form['title']
-    cast_ids = request.form['cast_ids']
-    cast_names = request.form['cast_names']
-    cast_characters = request.form['cast_characters']
-    cast_bdays = request.form['cast_bdays']
-    cast_bios = request.form['cast_bios']
-    cast_places = request.form['cast_places']
-    cast_profiles = request.form['cast_profiles']
+    ids = request.form['ids']
+    names = request.form['names']
+    characters = request.form['characters']
+    bdays = request.form['bdays']
+    bios = request.form['bios']
+    places = request.form['places']
+    images = request.form['profiles']
     poster = request.form['poster']
-    genres = request.form['genres']
     overview = request.form['overview']
     vote_average = request.form['rating']
     vote_count = request.form['vote_count']
     release_date = request.form['release_date']
     runtime = request.form['runtime']
     status = request.form['status']
-    rec_movies = request.form['rec_movies']
-    rec_posters = request.form['rec_posters']
-
+    movie_title = request.form['title']
+    movies = []
+    movie_posters = []
+    movie_cards = []
+    genres = []
+    try:
+        movies = request.form['movies']
+        movie_posters = request.form['posters']
+        genres = request.form['genres']
+        movies = stringToList(movies)
+        movie_posters = stringToList(movie_posters)
+        movie_cards = {movie_posters[index]: movies[index] for index in range(len(movie_posters))}
+    except:
+        print(request.form)
 
     # call the stringToList function for every string that needs to be converted to list
-    rec_movies = stringToList(rec_movies)
-    rec_posters = stringToList(rec_posters)
-    cast_names = stringToList(cast_names)
-    cast_characters = stringToList(cast_characters)
-    cast_profiles = stringToList(cast_profiles)
-    cast_bdays = stringToList(cast_bdays)
-    cast_bios = stringToList(cast_bios)
-    cast_places = stringToList(cast_places)
+    names = stringToList(names)
+    characters = stringToList(characters)
+    images = stringToList(images)
+    bdays = stringToList(bdays)
+    bios = stringToList(bios)
+    places = stringToList(places)
     
-    # converting string to list (eg. "[a,b,c]" to [a,b,c])
-    cast_ids = cast_ids.split(',')
-    cast_ids[0] = cast_ids[0].replace("[","")
-    cast_ids[-1] = cast_ids[-1].replace("]","")
+    ids = ids.split(',')
+    ids[0] = ids[0].replace("[","")
+    ids[-1] = ids[-1].replace("]","")
     
     # rendering the string to python string
-    for i in range(len(cast_bios)):
-        cast_bios[i] = cast_bios[i].replace(r'\n', '\n').replace(r'\"','\"')
+    for index in range(len(bios)):
+        bios[index] = bios[index].replace(r'\n', '\n').replace(r'\"','\"')
     
     # to preserve the order of information and make it easier to process inside html file, combining all the list as dict
-    movie_cards = {rec_posters[i]: rec_movies[i] for i in range(len(rec_posters))}
-    
-    casts = {cast_names[i]:[cast_ids[i], cast_characters[i], cast_profiles[i]] for i in range(len(cast_profiles))}
-    
-    cast_details = {cast_names[i]:[cast_ids[i], cast_profiles[i], cast_bdays[i], cast_places[i], cast_bios[i]] for i in range(len(cast_places))}
- 
-    return render_template('recommendMovie.html',title=title, casts=casts, overview=overview, poster=poster,
+    casts = {names[index]:[ids[index], characters[index], images[index]] for index in range(len(images))}
+    details = {names[index]:[ids[index], images[index], bdays[index], places[index], bios[index]] for index in range(len(places))}
+    return render_template('recommendMovie.html',title=movie_title, casts=casts, overview=overview, poster=poster,
         vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
-        movie_cards=movie_cards,cast_details=cast_details)
+        movie_cards=movie_cards,details=details)
+    
 
-session.pop('username', None)
 @app.route('/', methods=["GET"])
 def authenticate():
     if 'username' in session:
+        session.pop('username', None)
         movies = get_movies()
         return render_template('home.html',movies=movies)
     else:
-        return redirect(url_for(authenticate))
+        return render_template('auth.html')
 
 
 
@@ -152,13 +155,14 @@ def authenticate():
             # MongoDB routes
 ###############################################
 
+# for session
+app.secret_key = b'_5#hh"F4Q8z\n\xec]/'
+
 @app.route("/signup", methods=["GET", "POST"])
 def create_user():
     try:
         if request.method == 'POST':
-            print(request.form)
             existing_user = db.user.find_one({'username': request.form["username"]})
-            print(existing_user)
             if existing_user is None:
                 user = {
                     "username":request.form["username"],
@@ -166,7 +170,6 @@ def create_user():
                     }
                 
                 dbResponse = db.user.insert_one(user)
-                print(dbResponse.inserted_id)
                 session["username"] = request.form["username"]
                 return json.dumps({
                     "message":"Data Inserted",
@@ -180,7 +183,6 @@ def create_user():
         else:
             return render_template('auth.html')
     except Exception as e:
-        print(e)
         return json.dumps({
             "message":"Can not add records!"
         })
@@ -200,11 +202,24 @@ def findUser():
         return json.dumps({
             "data " : data
         })
-    except:
+    except Exception as e:
         return json.dumps({
             "message":"Can not find records!"
         })
 
+
+@app.route("/user/<username>", methods=["GET"])
+def findOneUser(username):
+    try:
+        data = db.user.find_one({"username": username})
+        return json.dumps({
+            "data":data["LikedMovie"]
+        })
+    except Exception as e:
+        print(e)
+        return json.dumps({
+            "message":"Can not find records!"
+        })
 
 
 @app.route("/user/<id>", methods=["PATCH"])
@@ -230,13 +245,12 @@ def update_user(id):
 
 
 
-@app.route("/user/<id>", methods=["DELETE"])
-def delete_user(id):
+@app.route("/user", methods=["DELETE"])
+def delete_user():
     try:
-        dbResponse = db.user.delete_one(
-            {"_id": ObjectId(id)},   
-        )
-        if dbResponse.deleted_count == 1:
+        session.pop('username', None)
+        dbResponse = db.user.delete_many({})
+        if dbResponse.deleted_count >= 1:
             return json.dumps({
                 "message":"Successfuly Deleted"
             })

@@ -1,4 +1,5 @@
 $(document).ready(function() {
+ 
   const inputField = document.getElementById('autoComplete');
   const inputHandler = function(e) {
     if(e.target.value == ""){
@@ -15,16 +16,63 @@ $(document).ready(function() {
     var entered_title = $('.input').val();
     if (entered_title=="") {
       $('.success').css('display','none');
-      $('.failed').css('display','block');
+      $('.failed').css('display','none');
+      $('.prerecommend').css('display','none')
     }
     else{
-      searchMovieWithTitle(API_KEY,entered_title);
+      searchMovieWithTitle(API_KEY,entered_title, false);
     }
   });
 });
 
+const fetchIntrest = () => {
+  let user = localStorage.getItem('username')
+  if(user)
+  {  
+    $.ajax({
+      type: 'GET',
+      url:'/user/'+user,
+      success: function(res){
+        const resp = JSON.parse(res)
+        console.log(resp.data);
+        getDataFromGenresID(res.data)
+      },
+      error: function(){
+        console.log('Something went wrong in findIntrest func');
+      },
+    });
+  }
+}
+fetchIntrest();
 
-function searchMovieWithTitle(API_KEY,title){
+function getDataFromGenresID(genres) {
+  //27 -> horror, 28 -> action, 878 -> scifi, 35 -> comedy, 10749 -> romance
+  let titles = [], id = [], overview = [], release_date = [], vote_average=[], vote_count=[];
+  $.ajax({
+    type: 'GET',
+    url:'https://api.themoviedb.org/3/discover/movie?api_key=97933c59065a2f21b4f313c8ef927b47&year=2017&with_genres='+genres,
+    success: function(res){
+      res.results.map((item, index) => {
+        if(index == 10) return;
+        titles.push(item.original_title);
+        id.push(item.id);
+        overview.push(item.overview);
+        release_date.push(item.release_date); 
+        vote_average.push(item.vote_average);
+        vote_count.push(item.vote_count);
+      })
+
+
+      // send a POST req to auth.html and show all the 10 datas in a cart
+      console.log(release_date);
+    },
+    error: function(){
+      console.log('Something went wrong in findIntrest func');
+    },
+  });
+}
+
+function searchMovieWithTitle(API_KEY,title, showSimilarMovies){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/search/movie?api_key='+API_KEY+'&query='+title,
@@ -33,21 +81,23 @@ function searchMovieWithTitle(API_KEY,title){
       //  if we didn't get any movie details to show
       if(movie.results.length<1){
         $('.failed').css('display','block');
-        $('.success').css('display','none');
+        $('.success').css('display','block');
+        $('.prerecommend').css('display','none')
         $("#loader").delay(400).fadeOut();
       }
       // if we got some movies to show
       else{
         $("#loader").fadeIn();
         $('.failed').css('display','none');
+        $('.prerecommend').css('display','none')
         $('.success').delay(1000).css('display','block');
         var id = movie.results[0].id; // fetching the first element of thr response array, to be more accurate
         var title = movie.results[0].original_title;
-        console.log(id);
-        getSimilarMovies(title,id,API_KEY);
+        console.log(movie.results);
+        getSimilarMovies(title,id,API_KEY, showSimilarMovies);
       }
     },
-    error: function(){
+    error: function(e){
       console.log('Something went wrong in searchMovieWithTitle func');
       $("#loader").delay(400).fadeOut();
     },
@@ -55,7 +105,7 @@ function searchMovieWithTitle(API_KEY,title){
 }
 
 
-function searchMovieWithCategory(API_KEY,id){
+function searchMovieWithCategory(API_KEY,id, showSimilarMovies){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
@@ -74,39 +124,41 @@ function searchMovieWithCategory(API_KEY,id){
         $('.success').delay(1000).css('display','block');
         var id = movie.id; 
         var title = movie.original_title;
-        getSimilarMovies(title,id,API_KEY);
+        log
+        getSimilarMovies(title,id,API_KEY, showSimilarMovies);
       }
     },
-    error: function(){
-      console.log('Something went wrong in searchMovieWithTitle func');
+    error: function(e){
+      console.log(e);
+      console.log('Something went wrong in searchMovieWithCateg func');
       $("#loader").delay(400).fadeOut();
     },
   });
 }
 
 // making a POST req by passing the title of the movie in the body to get similar movies
-function getSimilarMovies(title,id,API_KEY){
+function getSimilarMovies(title,id,API_KEY, showSimilarMovies){
   $.ajax({
     type:'POST',
     url:"/createsimilarity",
     data:{'title':title},
     success: function(data){
       // if there is no similar data
-      if(data=="Sorry! Your request can not be completed at the movement. Please check if you spelt everything correctly or try with some other movies"){
+      if(data=="Not present in CSV file"){
         $('.failed').css('display','block');
-        $('.success').css('display','none');
+        $('.success').css('display','block');
         $("#loader").delay(400).fadeOut();
       }
       else {
-        $('.failed').css('display','none');
+        $('.failed').css('display','block');
         $('.success').css('display','block');
         var movie_arr = data.split(' || ');
         var results = [];
         for(const movie in movie_arr){
           results.push(movie_arr[movie]);
         }
-        fetch_movie_details(id, results, title, API_KEY);
       }
+      fetch_movie_details(id, results, title, API_KEY, showSimilarMovies);
     },
     error: function(){
       console.log("Something went wrong in getSimilarMovies func");
@@ -117,12 +169,12 @@ function getSimilarMovies(title,id,API_KEY){
 
 
 // fetch all the details of the movie using the movie id.
-function fetch_movie_details(id, results, title, API_KEY) {
+function fetch_movie_details(id, results, title, API_KEY, showSimilarMovies) {
   $.ajax({
     type:'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
     success: function(data){
-      show_details(data,results,title,API_KEY,id);
+      prcessedDetails(data,results,title,API_KEY,id, showSimilarMovies);
     },
     error: function(){
       console.log("API Error!");
@@ -133,21 +185,17 @@ function fetch_movie_details(id, results, title, API_KEY) {
 
 
 // passing all the details to python's flask for displaying and scraping the movie reviews using imdb id
-function show_details(movie_details,results,movie_title,API_KEY,movie_id){
-  var imdb_id = movie_details.imdb_id;
-  var poster_path = 'https://image.tmdb.org/t/p/original'+movie_details.poster_path;
-  var overview = movie_details.overview;
+function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, showSimilarMovies){
   var genres = movie_details.genres;
-  var rating = movie_details.vote_average;
-  var vote_count = movie_details.vote_count;
-  var release_date = new Date(movie_details.release_date);
+  var date = new Date(movie_details.release_date);
   var runtime = parseInt(movie_details.runtime);
   var status = movie_details.status;
-  var genre_list = []
+  var genreList = []
   for (var genre in genres){
-    genre_list.push(genres[genre].name);
+    genreList.push(genres[genre].name);
   }
-  var my_genre = genre_list.join(", ");
+  var my_genre = genreList.join(", ");
+
   if(runtime%60==0){
     runtime = Math.floor(runtime/60)+" hrs"
   }
@@ -162,26 +210,30 @@ function show_details(movie_details,results,movie_title,API_KEY,movie_id){
   
   indiviudal_cast = get_individual_cast(movie_cast,API_KEY);
 
+  if(showSimilarMovies == true){
+    movie_title = ''
+  }
+  console.log(movie_title);
   details = {
       'title':movie_title,
-      'cast_ids':JSON.stringify(movie_cast.cast_ids),
-      'cast_names':JSON.stringify(movie_cast.cast_names),
-      'cast_characters':JSON.stringify(movie_cast.cast_characters),
-      'cast_profiles':JSON.stringify(movie_cast.cast_profiles),
-      'cast_bdays':JSON.stringify(indiviudal_cast.cast_bdays),
-      'cast_bios':JSON.stringify(indiviudal_cast.cast_bios),
-      'cast_places':JSON.stringify(indiviudal_cast.cast_places),
-      'imdb_id':imdb_id,
-      'poster':poster_path,
+      'id':movie_details.imdb_id,
+      'ids':JSON.stringify(movie_cast.cast_ids),
+      'names':JSON.stringify(movie_cast.cast_names),
+      'bdays':JSON.stringify(indiviudal_cast.cast_bdays),
+      'bios':JSON.stringify(indiviudal_cast.cast_bios),
+      'places':JSON.stringify(indiviudal_cast.cast_places),
+      'poster':'https://image.tmdb.org/t/p/original'+movie_details.poster_path,
+      'profiles':JSON.stringify(movie_cast.cast_profiles),
+      'characters':JSON.stringify(movie_cast.cast_characters),
       'genres':my_genre,
-      'overview':overview,
-      'rating':rating,
-      'vote_count':vote_count.toLocaleString(),
-      'release_date':release_date.toDateString().split(' ').slice(1).join(' '),
-      'runtime':runtime,
-      'status':status,
-      'rec_movies':JSON.stringify(results),
-      'rec_posters':JSON.stringify(results_poster),
+      'overview':movie_details.overview,
+      'rating':movie_details.vote_average,
+      'vote_count':movie_details.vote_count.toLocaleString(),
+      'release_date': date.toDateString().split(' ').slice(1).join(' '),
+      'runtime': movie_details.runtime,
+      'status': movie_details.status,
+      'movies':JSON.stringify(results),
+      'posters':JSON.stringify(results_poster),
   }
   $.ajax({
     type:'POST',
@@ -229,7 +281,7 @@ function get_cast(movie_id,API_KEY){
   cast_characters = [];
   cast_profiles = [];
 
-  top_10 = [0,1,2,3,4,5,6,7,8,9];
+  top_10 = [];
   $.ajax({
     type:'GET',
     url:"https://api.themoviedb.org/3/movie/"+movie_id+"/credits?api_key="+API_KEY,
@@ -290,5 +342,8 @@ function recommendSimilarMovies(e){
 // when clicked on any items on navbar 
 $('.nav-item').on('click',function(e){
   let selectedItem = e.target.getAttribute('value');
-  searchMovieWithCategory('97933c59065a2f21b4f313c8ef927b47', selectedItem)
+  searchMovieWithCategory('97933c59065a2f21b4f313c8ef927b47', selectedItem, true)
+  $('.failed').css('display','none');
 });
+
+

@@ -22,64 +22,66 @@
 </head>
 
 <body id="content">
-	<div class="results">
-    <div style="text-align: center;">
-	      <h2 id="name" class="text-uppercase">{{title}}</h2>
-    </div>
-	</div>
-	<br>
-
-<div id="searched_content">
-    <div id="mcontent">
-      <div class="poster-large">
-        <img class="poster" style="border-radius: 40px;margin-left: 90px;" height="400" width="250" src={{poster}}>
-      </div>
-      <div class="poster-small text-center">
-        <img class="poster" style="border-radius: 40px;margin-bottom: 5%;" height="400" width="250" src={{poster}}>
-      </div>
-      <div id="details">
-        <br/>
-        <h6 id="title" style="color:white;">TITLE: &nbsp;{{title}}</h6>
-        <h6 id="overview" style="color:white;max-width: 85%">OVERVIEW: <br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{overview}}</h6>
-        <h6 id="vote_average" style="color:white;">RATING: &nbsp;{{vote_average}}/10 ({{vote_count}} votes)</h6>
-        <h6 id="genres" style="color:white;">GENRE: &nbsp;{{genres}}</h6>
-        <h6 id="date" style="color:white;">RELEASE DATE: &nbsp;{{release_date}}</h6>
-        <h6 id="runtime" style="color:white;">RUNTIME: &nbsp;{{runtime}}</h6>
-        <h6 id="status" style="color:white;">STATUS: &nbsp;{{status}}</h6>
+  {% if title|length > 0 %}
+  <div>
+    <div class="results">
+      <div style="text-align: center;">
+          <h2 id="name" class="text-uppercase">{{title}}</h2>
       </div>
     </div>
-</div>
-<br/>
-	
-{% for name, details in cast_details.items() if not cast_details.hidden %}
-  <div class="modal fade" id="{{details[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #143193;color: white;">
-          <h5 class="modal-title" id="exampleModalLabel3">{{name}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true" style="color: white">&times;</span>
-          </button>
+    <br>
+    <div id="searched_content">
+      <div id="recom_Container">
+        <div class="poster-large">
+          <img class="poster" style="border-radius: 40px;margin-left: 90px;" height="400" width="250" src={{poster}}>
         </div>
-
-        <div class="modal-body">
-          <img class="profile-pic" src="{{details[1]}}" alt="{{name}} - profile" style="width: 250px;height:400px;border-radius: 10px;" />
-          <div style="margin-left: 20px">
-            <p><strong>Birthday:</strong> {{details[2]}} </p>
-            <p><strong>Place of Birth:</strong> {{details[3]}} </p>
-            <p> 
-              <p><strong>Biography:</strong><p>
-              {{details[4]}}
-            </p>
+        <div class="poster-small text-center">
+          <img class="poster" style="border-radius: 40px;margin-bottom: 5%;" height="400" width="250" src={{poster}}>
+        </div>
+        <div id="details">
+          <br/>
+          <h6 id="title" style="color:white;">TITLE: &nbsp;{{title}}</h6>
+          <h6 id="status" style="color:white;">STATUS: &nbsp;{{status}}</h6>
+          <h6 id="overview" style="color:white;max-width: 85%">OVERVIEW: <br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{overview}}</h6>
+          <h6 id="vote_average" style="color:white;">RATING: &nbsp;{{vote_average}}/10 ({{vote_count}} votes)</h6>
+          <h6 id="genres" style="color:white;">GENRE: &nbsp;{{genres}}</h6>
+          <h6 id="date" style="color:white;">RELEASE DATE: &nbsp;{{release_date}}</h6>
+          <h6 id="runtime" style="color:white;">RUNTIME: &nbsp;{{runtime}}</h6>
+        </div>
+      </div>
+  </div>
+  <br/>  
+  {% if details|length > 0 %}
+  {%  for name, details in details.items() if not details.hidden %}
+    <div class="modal fade" id="{{details[0]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: #143193;color: white;">
+            <h5 class="modal-title" id="exampleModalLabel3">{{name}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" style="color: white">&times;</span>
+            </button>
+          </div>
+  
+          <div class="modal-body">
+            <img class="profile-pic" src="{{details[1]}}" alt="{{name}} - profile" style="width: 250px;height:400px;border-radius: 10px;" />
+            <div style="margin-left: 20px">
+              <p><strong>Birthday:</strong> {{details[2]}} </p>
+              <p><strong>Place of Birth:</strong> {{details[3]}} </p>
+              <p> 
+                <p><strong>Biography:</strong><p>
+                {{details[4]}}
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-da0nger" data-dismiss="modal">Close</button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-da0nger" data-dismiss="modal">Close</button>
-        </div>
       </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
+    {% endif %} 
   
   {% if casts|length > 1 %}
   <div class="movie" style="color: #E8E8E8;">
@@ -107,7 +109,8 @@
       {% endfor %}
     </div>
 {% endif %}
-
+</div>
+{% endif %}
       {% if movie_cards|length > 1 %}
       <div class="movie" style="color: #E8E8E8;">
         <div style="text-align: center;">

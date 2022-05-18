@@ -24,18 +24,22 @@
             <h1 class="sm-text" style="color: white;">Choose from Categories</h1>
         </center>
         <form style="margin-top: 10%;" action="/" method="POST">
-            <input id="usernameInp" name="movie" type="text" placeholder="Enter any Username" required="required">
+            <input id="usernameInp" class="form-control"  name="movie" type="text" placeholder="Enter any Username" required="required">
             <br>
-            <input type="checkbox" id="check1" value="horror">
-            <label>HORROR</label><br>
-            <input type="checkbox" id="check2" value="scifi">
-            <label>Science Finction</label><br>
-            <input type="checkbox" id="check3" value="action">
-            <label>ACTION</label><br>
-            <input type="checkbox" id="check4" value="romantic">
-            <label>ROMANTIC</label><br>
+            <div style="text-align: left;">
+              <input type="checkbox" class="checkbox" id="check1" value="27">
+              <label class="label">HORROR</label><br>
+              <input type="checkbox" class="checkbox" id="check3" value="28">
+              <label class="label">ACTION</label><br>
+              <input type="checkbox" class="checkbox" id="check2" value="35">
+              <label class="label">Science Finction</label><br>
+              <input type="checkbox" class="checkbox" id="check4" value="10749">
+              <label class="label">ROMANTIC</label><br>
+              <input type="checkbox" class="checkbox" id="check5" value="35">
+              <label class="label">Comedy</label><br>
+            </div>
             <button class="submitForm btn btn-primary btn-lg" style="cursor: pointer;" disabled="true">Done</button>
-        </form> 
+        </form>   
         <div id="failed"></div>
         <div id="success"></div>
     </div>
