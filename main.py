@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -9,8 +9,11 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
+# for session
+app.secret_key = b'_5#hh"F4Q8z\n\xec]/'
 
-#######
+
+####### Connecting Database (MongoDB)
 try:
     mongo = pymongo.MongoClient(
         host="localhost",
@@ -75,7 +78,6 @@ def get_similarity():
         return m_str
 
 
-@app.route("/")
 @app.route("/home")
 def home():
     movies = get_movies()
@@ -135,28 +137,55 @@ def recommend():
         vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
         movie_cards=movie_cards,cast_details=cast_details)
 
+session.pop('username', None)
+@app.route('/', methods=["GET"])
+def authenticate():
+    if 'username' in session:
+        movies = get_movies()
+        return render_template('home.html',movies=movies)
+    else:
+        return redirect(url_for(authenticate))
 
-# MongoDB routes
 
-@app.route("/signup", methods=["POST"])
+
+###########################################
+            # MongoDB routes
+###############################################
+
+@app.route("/signup", methods=["GET", "POST"])
 def create_user():
     try:
-        user = {
-            "name":request.form["username"]
-            }
-        dbResponse = db.user.insert_one(user)
-        print(dbResponse.inserted_id)
-        # for attr in dir(dbResponse):
-        #     print(attr)
-        return json.dumps({
-            "message":"Data Inserted",
-            "MessageID":f"{dbResponse.inserted_id}",
-            "username":request.form["username"], 
-        })
-    except:
+        if request.method == 'POST':
+            print(request.form)
+            existing_user = db.user.find_one({'username': request.form["username"]})
+            print(existing_user)
+            if existing_user is None:
+                user = {
+                    "username":request.form["username"],
+                    "LikedMovie": request.form["LikedMovie"],
+                    }
+                
+                dbResponse = db.user.insert_one(user)
+                print(dbResponse.inserted_id)
+                session["username"] = request.form["username"]
+                return json.dumps({
+                    "message":"Data Inserted",
+                    "MessageID":f"{dbResponse.inserted_id}",
+                    "username":request.form["username"], 
+                })
+            else:
+                return json.dumps({
+                    "message":"User already exsist"
+                })
+        else:
+            return render_template('auth.html')
+    except Exception as e:
+        print(e)
         return json.dumps({
             "message":"Can not add records!"
         })
+
+
 
 
 @app.route("/users", methods=["GET"])
@@ -176,10 +205,12 @@ def findUser():
             "message":"Can not find records!"
         })
 
+
+
 @app.route("/user/<id>", methods=["PATCH"])
 def update_user(id):
     try:
-        dbResponse = db.users.update_one(
+        dbResponse = db.user.update_one(
             {"_id":ObjectId(id)}, #previous  
             {"$set":{"username":request.form["username"]}} #after updating
         )
@@ -197,16 +228,22 @@ def update_user(id):
         })
 
 
+
+
 @app.route("/user/<id>", methods=["DELETE"])
 def delete_user(id):
-    print(ObjectId(id))
     try:
-        dbResponse = db.users.delete_one(
-            {"_id":ObjectId(id)},   
+        dbResponse = db.user.delete_one(
+            {"_id": ObjectId(id)},   
         )
-        return json.dumps({
-            "message":"Successfuly Deleted"
-        })
+        if dbResponse.deleted_count == 1:
+            return json.dumps({
+                "message":"Successfuly Deleted"
+            })
+        else:
+            return json.dumps({
+                "message":"Nothing to Delete"
+            })
     except Exception as e:
         print(e)
         return json.dumps({

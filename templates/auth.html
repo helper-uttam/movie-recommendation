@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../static/logo.jpg" type="image/x-icon">
+    <title>SignIn</title>
+    <!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+</head>
+<body id="content_auth">
+    <div class="container">
+        <center>
+            <h1 class="sm-text" style="color: white;">Choose from Categories</h1>
+        </center>
+        <form style="margin-top: 10%;" action="/" method="POST">
+            <input id="usernameInp" name="movie" type="text" placeholder="Enter any Username" required="required">
+            <br>
+            <input type="checkbox" id="check1" value="horror">
+            <label>HORROR</label><br>
+            <input type="checkbox" id="check2" value="scifi">
+            <label>Science Finction</label><br>
+            <input type="checkbox" id="check3" value="action">
+            <label>ACTION</label><br>
+            <input type="checkbox" id="check4" value="romantic">
+            <label>ROMANTIC</label><br>
+            <button class="submitForm btn btn-primary btn-lg" style="cursor: pointer;" disabled="true">Done</button>
+        </form> 
+        <div id="failed"></div>
+        <div id="success"></div>
+    </div>
+    
+  <!-- loader -->
+  <div id="loader" style="display: none;">
+    <img src="../static/loader.gif"/>
+  </div>
+
+  <!-- after unsuccessful search -->
+  <div class="failed" style="display: none;">
+    <div style="text-align: center;">
+      <h3 style="margin-top: 10%;" class="alert alert-dark">Sorry! We could not able to process your request at the moment.</h3>
+    </div>
+  </div>
+  <!-- after unsuccessful search ends-->
+
+
+  <!-- after successful search -->
+	<div class="success">
+    <div style="text-align: center;">
+      <h2 id="name" class="text-uppercase"></h2>
+    </div>
+	</div>
+  <!-- after successful search  end -->
+</body>
+    <!-- javascript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='authenticate.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </html>
