@@ -80,6 +80,7 @@ def get_similarity():
 
 
 @app.route("/home")
+@app.route('/', methods=["GET"])
 def home():
     movies = get_movies()
     return render_template('home.html',movies=movies) # passing all the name of movies from our dataset to feed jQuery autocomplete feature
@@ -140,14 +141,14 @@ def recommend():
         movie_cards=movie_cards,details=details)
     
 
-@app.route('/', methods=["GET"])
-def authenticate():
-    if 'username' in session:
-        session.pop('username', None)
-        movies = get_movies()
-        return render_template('home.html',movies=movies)
-    else:
-        return render_template('auth.html')
+# @app.route('/', methods=["GET"])
+# def authenticate():
+#     if 'username' in session:
+#         session.pop('username', None)
+#         movies = get_movies()
+#         return render_template('home.html',movies=movies)
+#     else:
+#         return render_template('auth.html')
 
 
 
