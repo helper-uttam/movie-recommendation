@@ -106,7 +106,7 @@ def recommend():
     movies = []
     movie_posters = []
     movie_cards = []
-    genres = []
+    genres = ["undefined"]
     try:
         movies = request.form['movies']
         movie_posters = request.form['posters']
@@ -114,8 +114,8 @@ def recommend():
         movies = stringToList(movies)
         movie_posters = stringToList(movie_posters)
         movie_cards = {movie_posters[index]: movies[index] for index in range(len(movie_posters))}
-    except:
-        print(request.form)
+    except Exception as e:
+        print(e)
 
     # call the stringToList function for every string that needs to be converted to list
     names = stringToList(names)
