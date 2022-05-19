@@ -1,5 +1,4 @@
-from operator import index
-from flask import Flask, render_template, request, session
+from flask import Flask, request, session, render_template 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -115,7 +114,7 @@ def recommend():
         movie_posters = stringToList(movie_posters)
         movie_cards = {movie_posters[index]: movies[index] for index in range(len(movie_posters))}
     except Exception as e:
-        print(e)
+        print("Can't fetch similar movies for this movie")
 
     # call the stringToList function for every string that needs to be converted to list
     names = stringToList(names)
