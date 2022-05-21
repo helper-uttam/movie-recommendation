@@ -35,7 +35,7 @@ const fetchIntrest = () => {
       success: function(res){
         const resp = JSON.parse(res)
         console.log(resp.data);
-        getDataFromGenresID(res.data)
+        getDataFromGenresID(resp.data)
       },
       error: function(){
         console.log('Something went wrong in findIntrest func');
