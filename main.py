@@ -98,12 +98,13 @@ def recommend():
     vote_average = request.form['rating']
     vote_count = request.form['vote_count']
     status = request.form['status']
-    movie_title = request.form['title']
+    movie_title = ''
     movies = []
     movie_posters = []
     movie_cards = []
     genres = request.form['genres']
     try:
+        movie_title = request.form['title']
         movies = request.form['movies']
         movie_posters = request.form['posters']
         movies = stringToList(movies)

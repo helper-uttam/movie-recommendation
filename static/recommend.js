@@ -36,7 +36,6 @@ let fetchIntrest = () => {
       url:'/user/'+user,
       success: function(res){
         const resp = JSON.parse(res) //genresID
-        console.log("res.data -> " + res.data);
         return getDataFromGenresID(resp.data, '97933c59065a2f21b4f313c8ef927b47')
       },
       error: function(){
@@ -101,7 +100,7 @@ function searchMovieWithTitle(API_KEY,title, hideSimilarMovies){
 }
 
 
-function searchMovieWithCategory(API_KEY,id, hideSimilarMovies){
+function searchMovieWithCategory(API_KEY,id, showOnlySimilarMovies){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
@@ -120,7 +119,7 @@ function searchMovieWithCategory(API_KEY,id, hideSimilarMovies){
         $('.success').delay(1000).css('display','block');
         var id = movie.id; 
         var title = movie.original_title;
-        getSimilarMovies(title,id,API_KEY, hideSimilarMovies);
+        getSimilarMovies(title,id,API_KEY, showOnlySimilarMovies);
       }
     },
     error: function(e){
@@ -131,7 +130,7 @@ function searchMovieWithCategory(API_KEY,id, hideSimilarMovies){
 }
 
 // making a POST req by passing the title of the movie in the body to get similar movies
-function getSimilarMovies(title,id,API_KEY, hideSimilarMovies){
+function getSimilarMovies(title,id,API_KEY, showOnlySimilarMovies){
   $.ajax({
     type:'POST',
     url:"/createsimilarity",
@@ -152,7 +151,7 @@ function getSimilarMovies(title,id,API_KEY, hideSimilarMovies){
           similarMoviesTitles.push(movie_arr[movie]);
         }
       }
-      fetch_movie_details(id, similarMoviesTitles, title, API_KEY, hideSimilarMovies);
+      fetch_movie_details(id, similarMoviesTitles, title, API_KEY, showOnlySimilarMovies);
     },
     error: function(){
       console.log("Something went wrong in getSimilarMovies func");
@@ -163,12 +162,12 @@ function getSimilarMovies(title,id,API_KEY, hideSimilarMovies){
 
 
 // fetch all the details of the movie using the movie id.
-function fetch_movie_details(id, results, title, API_KEY, hideSimilarMovies) {
+function fetch_movie_details(id, results, title, API_KEY, showOnlySimilarMovies) {
   $.ajax({
     type:'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
     success: function(data){
-      prcessedDetails(data,results,title,API_KEY,id, hideSimilarMovies);
+      prcessedDetails(data,results,title,API_KEY,id, showOnlySimilarMovies);
     },
     error: function(){
       console.log("API Error!");
@@ -179,7 +178,7 @@ function fetch_movie_details(id, results, title, API_KEY, hideSimilarMovies) {
 
 
 // passing all the details to python's flask for displaying and scraping the movie reviews using imdb id
-function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hideSimilarMovies){
+function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, showOnlySimilarMovies){
   var genres = movie_details.genres;
   var date = new Date(movie_details.release_date);
   var runtime = parseInt(movie_details.runtime);
@@ -203,10 +202,9 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hid
   
   indiviudal_cast = get_individual_cast(movie_cast,API_KEY);
 
-  // if(hideSimilarMovies == true){
-  //   movie_title = ''
-  // }
-
+  if(showOnlySimilarMovies == true){
+    movie_title = ''
+  }
   details = {
       'title':movie_title,
       'id':movie_details.imdb_id,
@@ -228,7 +226,7 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hid
       'movies':JSON.stringify(results),
       'posters':JSON.stringify(results_poster),
   }
-
+  print(details)
   $.ajax({
     type:'POST',
     data:details,
