@@ -1,3 +1,4 @@
+from turtle import title
 from flask import Flask, request, session, render_template 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
@@ -108,7 +109,6 @@ def recommend():
     movie_posters = []
     movie_cards = []
     genres = request.form['genres']
-    print(genres)
     try:
         movies = request.form['movies']
         movie_posters = request.form['posters']
@@ -116,6 +116,7 @@ def recommend():
         movie_posters = stringToList(movie_posters)
         movie_cards = {movie_posters[index]: movies[index] for index in range(len(movie_posters))}
     except Exception as e:
+        print(e)
         print("Can't fetch similar movies for this movie")
 
     # call the stringToList function for every string that needs to be converted to list
@@ -137,6 +138,7 @@ def recommend():
     # to preserve the order of information and make it easier to process inside html file, combining all the list as dict
     casts = {names[index]:[ids[index], characters[index], images[index]] for index in range(len(images))}
     details = {names[index]:[ids[index], images[index], bdays[index], places[index], bios[index]] for index in range(len(places))}
+    
     return render_template('recommendMovie.html',title=movie_title, casts=casts, overview=overview, poster=poster,
         vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
         movie_cards=movie_cards,details=details)

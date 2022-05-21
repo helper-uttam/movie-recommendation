@@ -1,5 +1,6 @@
+
 $(document).ready(function() {
- 
+
   const inputField = document.getElementById('autoComplete');
   const inputHandler = function(e) {
     if(e.target.value == ""){
@@ -23,24 +24,20 @@ $(document).ready(function() {
       searchMovieWithTitle(API_KEY,entered_title, false);
     }
   });
+  fetchIntrest()
 });
 
- function fetchIntrest(){
+
+let fetchIntrest = () => {
   let user = localStorage.getItem('username')
   if(user){  
     $.ajax({
       type: 'GET',
       url:'/user/'+user,
       success: function(res){
-<<<<<<< HEAD
-        const resp = JSON.parse(res)
-        console.log(resp.data);
-        getDataFromGenresID(resp.data)
-=======
         const resp = JSON.parse(res) //genresID
         console.log("res.data -> " + res.data);
-        getDataFromGenresID(resp.data, '97933c59065a2f21b4f313c8ef927b47')
->>>>>>> deployment
+        return getDataFromGenresID(resp.data, '97933c59065a2f21b4f313c8ef927b47')
       },
       error: function(){
         console.log('Something went wrong in findIntrest func');
@@ -49,7 +46,6 @@ $(document).ready(function() {
   }
 }
 
-fetchIntrest();
 
 function getDataFromGenresID(genres, API_KEY) {
   //27 -> horror, 28 -> action, 878 -> scifi, 35 -> comedy, 10749 -> romance
@@ -64,8 +60,6 @@ function getDataFromGenresID(genres, API_KEY) {
       })
       title = res.results[0].original_title;
       id = res.results[0].id; //on the basis of this 
-      console.log("getDatafromGenresID");
-      console.log(titles);
       $('.prerecommend').css('display','block')
       fetch_movie_details(id, titles, title, API_KEY, true);
     },
@@ -75,7 +69,7 @@ function getDataFromGenresID(genres, API_KEY) {
   });
 }
 
-function searchMovieWithTitle(API_KEY,title, hideTitle){
+function searchMovieWithTitle(API_KEY,title, hideSimilarMovies){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/search/movie?api_key='+API_KEY+'&query='+title,
@@ -96,7 +90,7 @@ function searchMovieWithTitle(API_KEY,title, hideTitle){
         $('.success').delay(400).css('display','block');
         var id = movie.results[0].id; // fetching the first element of thr response array, to be more accurate
         var title = movie.results[0].original_title;
-        getSimilarMovies(title,id,API_KEY, hideTitle);
+        getSimilarMovies(title,id,API_KEY, hideSimilarMovies);
       }
     },
     error: function(e){
@@ -107,7 +101,7 @@ function searchMovieWithTitle(API_KEY,title, hideTitle){
 }
 
 
-function searchMovieWithCategory(API_KEY,id, hideTitle){
+function searchMovieWithCategory(API_KEY,id, hideSimilarMovies){
   $.ajax({
     type: 'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
@@ -126,7 +120,7 @@ function searchMovieWithCategory(API_KEY,id, hideTitle){
         $('.success').delay(1000).css('display','block');
         var id = movie.id; 
         var title = movie.original_title;
-        getSimilarMovies(title,id,API_KEY, hideTitle);
+        getSimilarMovies(title,id,API_KEY, hideSimilarMovies);
       }
     },
     error: function(e){
@@ -137,7 +131,7 @@ function searchMovieWithCategory(API_KEY,id, hideTitle){
 }
 
 // making a POST req by passing the title of the movie in the body to get similar movies
-function getSimilarMovies(title,id,API_KEY, hideTitle){
+function getSimilarMovies(title,id,API_KEY, hideSimilarMovies){
   $.ajax({
     type:'POST',
     url:"/createsimilarity",
@@ -146,7 +140,7 @@ function getSimilarMovies(title,id,API_KEY, hideTitle){
       // if there is no similar data
       if(data=="Not present in CSV file"){
         $('.failed').css('display','block');
-        $('.success').css('display','none');
+        $('.success').css('display','block');
         $("#loader").delay(400).fadeOut();
       }
       else {
@@ -158,7 +152,7 @@ function getSimilarMovies(title,id,API_KEY, hideTitle){
           similarMoviesTitles.push(movie_arr[movie]);
         }
       }
-      fetch_movie_details(id, similarMoviesTitles, title, API_KEY, hideTitle);
+      fetch_movie_details(id, similarMoviesTitles, title, API_KEY, hideSimilarMovies);
     },
     error: function(){
       console.log("Something went wrong in getSimilarMovies func");
@@ -169,12 +163,12 @@ function getSimilarMovies(title,id,API_KEY, hideTitle){
 
 
 // fetch all the details of the movie using the movie id.
-function fetch_movie_details(id, results, title, API_KEY, hideTitle) {
+function fetch_movie_details(id, results, title, API_KEY, hideSimilarMovies) {
   $.ajax({
     type:'GET',
     url:'https://api.themoviedb.org/3/movie/'+id+'?api_key='+API_KEY,
     success: function(data){
-      prcessedDetails(data,results,title,API_KEY,id, hideTitle);
+      prcessedDetails(data,results,title,API_KEY,id, hideSimilarMovies);
     },
     error: function(){
       console.log("API Error!");
@@ -185,7 +179,7 @@ function fetch_movie_details(id, results, title, API_KEY, hideTitle) {
 
 
 // passing all the details to python's flask for displaying and scraping the movie reviews using imdb id
-function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hideTitle){
+function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hideSimilarMovies){
   var genres = movie_details.genres;
   var date = new Date(movie_details.release_date);
   var runtime = parseInt(movie_details.runtime);
@@ -209,17 +203,18 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hid
   
   indiviudal_cast = get_individual_cast(movie_cast,API_KEY);
 
-  if(hideTitle == true){
-    movie_title = ''
-  }
+  // if(hideSimilarMovies == true){
+  //   movie_title = ''
+  // }
+
   details = {
       'title':movie_title,
       'id':movie_details.imdb_id,
       'ids':JSON.stringify(movie_cast.cast_ids),
       'names':JSON.stringify(movie_cast.cast_names),
+      'places':JSON.stringify(indiviudal_cast.cast_places),
       'bdays':JSON.stringify(indiviudal_cast.cast_bdays),
       'bios':JSON.stringify(indiviudal_cast.cast_bios),
-      'places':JSON.stringify(indiviudal_cast.cast_places),
       'poster':'https://image.tmdb.org/t/p/original'+movie_details.poster_path,
       'profiles':JSON.stringify(movie_cast.cast_profiles),
       'characters':JSON.stringify(movie_cast.cast_characters),
@@ -233,6 +228,7 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, hid
       'movies':JSON.stringify(results),
       'posters':JSON.stringify(results_poster),
   }
+
   $.ajax({
     type:'POST',
     data:details,
