@@ -1,4 +1,3 @@
-from turtle import title
 from flask import Flask, request, session, render_template 
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
@@ -9,21 +8,16 @@ from bson.objectid import ObjectId
 
 
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 ####### Connecting Database (MongoDB) #####
 ##############################################
-
 try:
-    mongo = pymongo.MongoClient(
-        host="localhost",
-        port=27017,
-        serverSelectionTimeoutMS = 1000
-    )
+    mongo = pymongo.MongoClient('mongodb+srv://Uttam:QJLRGuIVeozVj7yQ@cluster0.axnkt.mongodb.net/?retryWrites=true&w=majority')
     db = mongo.user
     mongo.server_info()
-except:
+except Exception as e:
+    print(e)
     print("Can not connect to database")
 
 #######################################
@@ -269,4 +263,4 @@ def delete_user():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
