@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 
 
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 ####### Connecting Database (MongoDB) #####
@@ -53,6 +54,7 @@ def getRecommendedMoviesTitles(mov):
     else:
         i = data.loc[data['movie_title']==mov].index[0]
         lst = list(enumerate(similarity[i])) #indexing each similarity 
+        print(lst)
         lst = sorted(lst, key = lambda x:x[1] ,reverse=True)
         lst = lst[1:11] # excluding the first item because it is the requested movie itself
         finalList = []
@@ -78,8 +80,8 @@ def get_similarity():
         return m_str
 
 
-@app.route("/home")
-@app.route('/', methods=["GET"])
+@app.route("/home", methods=["GET"])
+# @app.route('/', methods=["GET"])
 def home():
     movies = get_movies()
     return render_template('home.html',movies=movies) # passing all the name of movies from our dataset to feed jQuery autocomplete feature
@@ -96,20 +98,20 @@ def recommend():
     images = request.form['profiles']
     poster = request.form['poster']
     overview = request.form['overview']
-    vote_average = request.form['rating']
-    vote_count = request.form['vote_count']
     release_date = request.form['release_date']
     runtime = request.form['runtime']
+    vote_average = request.form['rating']
+    vote_count = request.form['vote_count']
     status = request.form['status']
     movie_title = request.form['title']
     movies = []
     movie_posters = []
     movie_cards = []
-    genres = ["undefined"]
+    genres = request.form['genres']
+    print(genres)
     try:
         movies = request.form['movies']
         movie_posters = request.form['posters']
-        genres = request.form['genres']
         movies = stringToList(movies)
         movie_posters = stringToList(movie_posters)
         movie_cards = {movie_posters[index]: movies[index] for index in range(len(movie_posters))}
@@ -140,14 +142,14 @@ def recommend():
         movie_cards=movie_cards,details=details)
     
 
-# @app.route('/', methods=["GET"])
-# def authenticate():
-#     if 'username' in session:
-#         session.pop('username', None)
-#         movies = get_movies()
-#         return render_template('home.html',movies=movies)
-#     else:
-#         return render_template('auth.html')
+@app.route('/', methods=["GET"])
+def authenticate():
+    if 'username' in session:
+        session.pop('username', None)
+        movies = get_movies()
+        return render_template('home.html',movies=movies)
+    else:
+        return render_template('auth.html')
 
 
 
