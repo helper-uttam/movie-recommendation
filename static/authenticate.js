@@ -6,10 +6,10 @@ $(document).ready(function() {
     const input = document.getElementById('usernameInp');
     const inputHandler = function(e) {
         username = e.target.value
-        if(e.target.value == ""){
+        if(username == ""){
           $('.submitForm').attr('disabled', true);
         }
-        else if(e.target.value != "" && selectedChoices.length > 0){
+        else if(username != "" && selectedChoices.length > 0){
           $('.submitForm').attr('disabled', false);
         }       
       }
@@ -48,9 +48,11 @@ async function handleSubmit (username) {
     success: function(mes){
       const resp = JSON.parse(mes)
       if(resp.message == "Data Inserted"){
+          console.log(resp)
           localStorage.setItem("username",username)
           location.reload();
       }else{
+        console.log(resp)
         console.log("Cannot insert data");
       }
     },

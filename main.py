@@ -13,7 +13,7 @@ app = Flask(__name__)
 ####### Connecting Database (MongoDB) #####
 ##############################################
 try:
-    mongo = pymongo.MongoClient('_______MONGO CLUSTER_____')
+    mongo = pymongo.MongoClient('____MONGO_URL___')
     db = mongo.user
     mongo.server_info()
 except Exception as e:
@@ -96,7 +96,7 @@ def recommend():
     release_date = request.form['release_date']
     runtime = request.form['runtime']
     vote_average = request.form['rating']
-    vote_count = request.form['vote_count']
+    total_votes = request.form['vote_count']
     status = request.form['status']
     movie_title = ''
     movies = []
@@ -131,11 +131,11 @@ def recommend():
         bios[index] = bios[index].replace(r'\n', '\n').replace(r'\"','\"')
     
     # to preserve the order of information and make it easier to process inside html file, combining all the list as dict
-    casts = {names[index]:[ids[index], characters[index], images[index]] for index in range(len(images))}
+    casts = {names[index]:[ids[index], characters[index], images[index], bdays[index]] for index in range(len(images))}
     details = {names[index]:[ids[index], images[index], bdays[index], places[index], bios[index]] for index in range(len(places))}
     
     return render_template('recommendMovie.html',title=movie_title, casts=casts, overview=overview, poster=poster,
-        vote_count=vote_count,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
+        total_votes=total_votes,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
         movie_cards=movie_cards,details=details)
     
 
@@ -167,7 +167,7 @@ def create_user():
                     "username":request.form["username"],
                     "LikedMovie": request.form["LikedMovie"],
                     }
-                
+                print(user)
                 dbResponse = db.user.insert_one(user)
                 session["username"] = request.form["username"]
                 return json.dumps({
@@ -182,6 +182,7 @@ def create_user():
         else:
             return render_template('auth.html')
     except Exception as e:
+        print(e)
         return json.dumps({
             "message":"Can not add records!"
         })
@@ -264,4 +265,4 @@ def delete_user():
         })
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

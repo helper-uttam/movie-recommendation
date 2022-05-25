@@ -1,6 +1,7 @@
+// loading screen while fetching data after selecting any option from the login page
+$("#loader").fadeIn();
 
 $(document).ready(function() {
-
   const inputField = document.getElementById('autoComplete');
   const inputHandler = function(e) {
     if(e.target.value == ""){
@@ -13,22 +14,22 @@ $(document).ready(function() {
   inputField.addEventListener('input', inputHandler);
 
   $('.search-button').on('click',function(){
-    var API_KEY = '____API_KEY___';
+    var API_KEY = '____API_KEY____';
     var entered_title = $('.input').val();
     if (entered_title=="") {
       $('.success').css('display','none');
-      $('.failed').css('display','none');
-      $('.prerecommend').css('display','none')
+      $('.failed').css('display', 'none');
+      $('.prerecommend').css('display', 'none')
     }
     else{
+      $('.description').css('display', 'none')
       searchMovieWithTitle(API_KEY,entered_title, false);
     }
   });
-  fetchIntrest()
 });
+// initial data fetching after selecting any option from the login page
 
-
-let fetchIntrest = () => {
+window.onload = () => {
   let user = localStorage.getItem('username')
   if(user){  
     $.ajax({
@@ -36,7 +37,7 @@ let fetchIntrest = () => {
       url:'/user/'+user,
       success: function(res){
         const resp = JSON.parse(res) //genresID
-        return getDataFromGenresID(resp.data, '____API_KEY___')
+        getDataFromGenresID(resp.data, '____API_KEY____')
       },
       error: function(){
         console.log('Something went wrong in findIntrest func');
@@ -44,7 +45,6 @@ let fetchIntrest = () => {
     });
   }
 }
-
 
 function getDataFromGenresID(genres, API_KEY) {
   //27 -> horror, 28 -> action, 878 -> scifi, 35 -> comedy, 10749 -> romance
@@ -58,7 +58,7 @@ function getDataFromGenresID(genres, API_KEY) {
         titles.push(item.original_title);
       })
       title = res.results[0].original_title;
-      id = res.results[0].id; //on the basis of this 
+      id = res.results[0].id; 
       $('.prerecommend').css('display','block')
       fetch_movie_details(id, titles, title, API_KEY, true);
     },
@@ -196,11 +196,11 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, sho
   }
 
   // list of posters of all the similar movies
-  results_poster = get_posters(results,API_KEY);
+  let results_poster = get_posters(results,API_KEY);
   
-  movie_cast = get_cast(movie_id,API_KEY);
+  let movie_cast = get_cast(movie_id,API_KEY);
   
-  indiviudal_cast = get_individual_cast(movie_cast,API_KEY);
+  let indiviudal_cast = get_individual_cast(movie_cast,API_KEY);
 
   if(showOnlySimilarMovies == true){
     movie_title = ''
@@ -226,7 +226,6 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, sho
       'movies':JSON.stringify(results),
       'posters':JSON.stringify(results_poster),
   }
-  print(details)
   $.ajax({
     type:'POST',
     data:details,
@@ -262,7 +261,7 @@ function get_posters(movies, API_KEY){
     })
   }
   return listOfPosters;
-  }
+}
   
 
 
@@ -325,7 +324,7 @@ function get_individual_cast(movie_cast,my_api_key) {
 
 // when clicked on any of the recommended movies
 function recommendSimilarMovies(e){
-  var API_KEY = '____API_KEY___';
+  var API_KEY = '____API_KEY____';
   var title_of_movie = e.getAttribute('title'); 
   searchMovieWithTitle(API_KEY,title_of_movie);
 }
@@ -334,7 +333,7 @@ function recommendSimilarMovies(e){
 // when clicked on any items on navbar 
 $('.nav-item').on('click',function(e){
   let selectedItem = e.target.getAttribute('value');
-  searchMovieWithCategory('____API_KEY___', selectedItem, true)
+  searchMovieWithCategory('____API_KEY____', selectedItem, true)
   $('.failed').css('display','none');
 });
 

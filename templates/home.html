@@ -27,12 +27,13 @@
 <body id="content" style="font-family: 'Noto Sans JP', sans-serif;">
   
   <script type="text/javascript">
+    // making source of movies to parse it in autocomplete.js for autocomplete feature
     var movies = {{movies|tojson}};
   </script>
 
    <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="/">Movie Recommendation System</a>
+    <a class="navbar-brand" href="/home">Movie Recommendation System</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -76,18 +77,19 @@
   <div class="prerecommend" style="display: none;">
     <center>
       <h1>According to your choices!</h1>
-      <p style="color: white">Please Note: Recommendating acc to these movies is not possible at the moment.</p>
-      <ul style="color: white"> 
-        <li>Try searching with some movies that are present in our database</li>
-        <li>You'll get autocomplete feature for all those movies which are present in our backend</li>
-      </ul>
+      <div class="description">
+        <p style="color: white">Please Note: Recommending according to these movies is not possible at the moment.</p>
+        <ul style="color: white"> 
+          <li>Try searching with some movies that are present in our database</li>
+          <li>You'll get autocomplete feature for all those movies which are present in our backend</li>
+        </ul>
+      </div>
     </center>
   </div>
 
   <!-- after successful search -->
 	<div class="success">
     <div style="text-align: center;">
-      <h2 id="name" class="text-uppercase"></h2>
     </div>
 	</div>
   <!-- after successful search  end -->
