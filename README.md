@@ -1,6 +1,5 @@
 # Movie Recommendation System
-This application is based on **content based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the name of the casts.
-and genres. 
+This application is based on **content based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror). 
 
 
 # Requriements
