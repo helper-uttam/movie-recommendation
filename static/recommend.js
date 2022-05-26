@@ -209,6 +209,7 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, sho
       'title':movie_title,
       'id':movie_details.imdb_id,
       'ids':JSON.stringify(movie_cast.cast_ids),
+      'imdb_id': movie_details.imdb_id,
       'names':JSON.stringify(movie_cast.cast_names),
       'places':JSON.stringify(indiviudal_cast.cast_places),
       'bdays':JSON.stringify(indiviudal_cast.cast_bdays),

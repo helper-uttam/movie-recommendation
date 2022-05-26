@@ -51,14 +51,15 @@
         </div>
       </div>
   </div>
-  <br/>  
+  <br/> 
+   
   {% if details|length > 0 %}
   {%  for name, details in details.items() if not details.hidden %}
-    <div class="modal fade" id="{{details[0]}}" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="modal fade" id="{{details[0]}}" role="dialog" aria-labelledby="cast_name" aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-          <div class="modal-header" style="background-color: #143193;color: white;">
-            <h5 class="modal-title" id="exampleModalLabel3">{{name}}</h5>
+          <div style="background-color: #143193;color: white;">
+            <h5 id="cast_name">{{name}}</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" style="color: white">&times;</span>
             </button>
@@ -91,26 +92,35 @@
     </div>
   </div>
 
+  <!-- CAST CARD -->
   <div class="similar_movies">
-        {% for name, details in casts.items() if not casts.hidden %}
-        <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="{{details[2]}}" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">{{name|title}}</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Character: {{details[1]|title}}</li>
-          </ul>
+    {% for name, details in casts.items() if not casts.hidden %}
+      <div class="castcard card" style="width: 15rem;" title="Click to know more about {{name}}" data-toggle="modal" data-target="#{{details[0]}}">
+        <div class="imghvr">
+          <img class="card-img-top cast-img" id="{{details[0]}}" height="360" width="240" alt="{{name}} - profile" src="{{details[2]}}">
+          <figcaption class="fig">
+            <div style="background-color: rgb(100, 100, 225); font-size: 1.8rem; opacity: 0.5; height: 100%; width: 100%; z-index: -1;"> 
+              <p style="color: white; opacity: 1; margin: 40% 0% 0% 20%; z-index: 1;">Know More</p>
+            </div>
+          </figcaption>
         </div>
-      {% endfor %}
+        <div class="card-body">
+          <h5 class="card-title">{{name|title}}</h5>
+          <h5 class="card-title"><span style="color:#756969;font-size: 20px;">Character: {{details[1]|title}}</span></h5>
+        </div>
+      </div>
+  {% endfor %}
+</div>
     </div>
 {% endif %}
 </div>
 {% endif %}
-      {% if movie_cards|length > 1 %}
-      <div class="movie">
-        <div style="text-align: center;">
-        </div>
+
+    <!-- SIMILAR MOVIES -->
+    {% if movie_cards|length > 1 %}
+    <div class="movie">
+      <div style="text-align: center;">
+    </div>
     </div>
     <center>
       <h3 class="similar_movies" style="color: white; display: none;">SIMILAR MOVIES</h1>

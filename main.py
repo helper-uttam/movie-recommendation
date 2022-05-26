@@ -5,6 +5,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pymongo
 import json
 from bson.objectid import ObjectId
+import numpy as np
+
+# for NLP
+import pickle
+# for Web Scrapping 
+import urllib.request
+import bs4 as bs
+
+
 
 
 app = Flask(__name__)
@@ -22,6 +31,11 @@ except Exception as e:
 
 #######################################
 #######################################
+
+
+classifier = pickle.load(open('./datasets/sentimentAnalysis.pkl', 'rb'))
+vectorizer = pickle.load(open('./datasets/tranform.pkl','rb'))
+
 
 def get_movies():
     orig_data = pd.read_csv('./datasets/processedData_2017.csv')
@@ -49,7 +63,6 @@ def getRecommendedMoviesTitles(mov):
     else:
         i = data.loc[data['movie_title']==mov].index[0]
         lst = list(enumerate(similarity[i])) #indexing each similarity 
-        print(lst)
         lst = sorted(lst, key = lambda x:x[1] ,reverse=True)
         lst = lst[1:11] # excluding the first item because it is the requested movie itself
         finalList = []
@@ -103,6 +116,7 @@ def recommend():
     movie_posters = []
     movie_cards = []
     genres = request.form['genres']
+    imdb_id = request.form['imdb_id']
     try:
         movie_title = request.form['title']
         movies = request.form['movies']
@@ -134,9 +148,34 @@ def recommend():
     casts = {names[index]:[ids[index], characters[index], images[index], bdays[index]] for index in range(len(images))}
     details = {names[index]:[ids[index], images[index], bdays[index], places[index], bios[index]] for index in range(len(places))}
     
+    # web scraping to get user reviews from IMDB site
+    movie_reviews = {}
+    if len(imdb_id) > 0:
+        sauce = urllib.request.urlopen('https://www.imdb.com/title/{}/reviews?ref_=tt_ov_rt'.format(imdb_id)).read()
+        soup = bs.BeautifulSoup(sauce,'lxml')
+        soup_result = soup.find_all("div",{"class":"text show-more__control"})
+
+        reviews_list = [] # list of reviews
+        processed_reviews = [] # list of comments (good or bad)
+        i = 1
+        for reviews in soup_result:
+            # Taking only first five reviews
+            # .string menthod is decoding the html encoding
+            if reviews.string and i<=5:
+                reviews_list.append(reviews.string)
+                # passing the review to our model after converting into vectors
+                movie_review_list = np.array([reviews.string])
+                review_vector = vectorizer.transform(movie_review_list)
+                prediction = classifier.predict(review_vector)
+                processed_reviews.append('Liked' if prediction else 'Disliked')
+                i = i+1
+
+        reviews_dict = {reviews_list[i]: processed_reviews[i] for i in range(len(reviews_list))}     
+
+
     return render_template('recommendMovie.html',title=movie_title, casts=casts, overview=overview, poster=poster,
         total_votes=total_votes,release_date=release_date,runtime=runtime,status=status, vote_average=vote_average, genres=genres,
-        movie_cards=movie_cards,details=details)
+        movie_cards=movie_cards,details=details, reviews=reviews_dict)
     
 
 @app.route('/', methods=["GET"])
