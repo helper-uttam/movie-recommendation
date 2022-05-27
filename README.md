@@ -20,8 +20,16 @@ This application is based on **content based filtering** and uses **cosine simil
 - urllib3==1.26.5
 - requests==2.23.0
 - pickleshare==0.7.5
+- bs4
+- tmdbv3api==1.6.1
+- beautifulsoup4==4.9.1
+- pickleshare==0.7.5
 - pymongo==4.1.1
 ```
+
+## Required Credentials
+> MONGO_URL - Replace `__MONGO_URL__` with your Database collection url in *main.py* 
+> API_KEY  - Replace `__API_KEY__` with your own API KEY 4times in *recommend.js* file
 
 According to my personal PC specification (windowsOS x64) all the requirements are listed in [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file.  
 
