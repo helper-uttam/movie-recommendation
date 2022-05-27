@@ -14,7 +14,7 @@ $(document).ready(function() {
   inputField.addEventListener('input', inputHandler);
 
   $('.search-button').on('click',function(){
-    var API_KEY = '97933c59065a2f21b4f313c8ef927b47';
+    var API_KEY = '__API_KEY__';
     var entered_title = $('.input').val();
     if (entered_title=="") {
       $('.success').css('display','none');
@@ -37,7 +37,7 @@ window.onload = () => {
       url:'/user/'+user,
       success: function(res){
         const resp = JSON.parse(res) //genresID
-        getDataFromGenresID(resp.data, '97933c59065a2f21b4f313c8ef927b47')
+        getDataFromGenresID(resp.data, '__API_KEY__')
       },
       error: function(){
         console.log('Something went wrong in findIntrest func');
@@ -325,7 +325,7 @@ function get_individual_cast(movie_cast,my_api_key) {
 
 // when clicked on any of the recommended movies
 function recommendSimilarMovies(e){
-  var API_KEY = '97933c59065a2f21b4f313c8ef927b47';
+  var API_KEY = '__API_KEY__';
   var title_of_movie = e.getAttribute('title'); 
   searchMovieWithTitle(API_KEY,title_of_movie);
 }
@@ -334,7 +334,7 @@ function recommendSimilarMovies(e){
 // when clicked on any items on navbar 
 $('.nav-item').on('click',function(e){
   let selectedItem = e.target.getAttribute('value');
-  searchMovieWithCategory('97933c59065a2f21b4f313c8ef927b47', selectedItem, true)
+  searchMovieWithCategory('__API_KEY__', selectedItem, true)
   $('.failed').css('display','none');
 });
 
