@@ -59,7 +59,7 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div style="background-color: #143193;color: white;">
-            <h5 id="cast_name">{{name}}</h5>
+            <center><h5 id="cast_name">{{name}}</h5></center>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" style="color: white">&times;</span>
             </button>
@@ -109,10 +109,45 @@
           <h5 class="card-title"><span style="color:#756969;font-size: 20px;">Character: {{details[1]|title}}</span></h5>
         </div>
       </div>
-  {% endfor %}
+    {% endfor %}
+  </div>
 </div>
-    </div>
 {% endif %}
+  
+
+<!-- Reviews -->
+<div style="text-align: center;">
+  {% if reviews %}
+    <h3 style="color:white">REVIEWS</h3>
+     <div class="col-md-12" style="margin: 0 auto; margin-top:25px;">
+        <table class="table table-bordered" bordercolor="white" style="color:white">
+                <tr>
+                    <th class="text-center" scope="col" style="width: 75%">Reviews</th>
+                    <th class="text-center" scope="col">Sentiments</th>
+                </tr>
+          <!-- At max the reviews can be upto 5 -->
+		      {% for review, status in reviews.items() %}
+		      <tr style="background-color: #9a9fa1; font-size: 1.5rem;">
+              	  <td>{{review}}</td>
+	              <td>    
+                  <div style="text-align: center;">
+	                  {% if status =='Liked' %}
+	                    <img width="300px" height="200px" src="../static/like.png">
+	                  {% else %}
+	                    <img width="350px" height="200px" src="../static/dislike.png">
+	                  {% endif %}
+                </div>
+	              </td>
+          		</tr>
+      			{% endfor %}
+ 		 </table>
+    </div>
+    {% else %}
+    <div style="color:white;">
+      <h1 style="color:white"> This movie is not released yet. Stay tuned! </h1>
+    </div>
+    {% endif %}
+  </div>
 </div>
 {% endif %}
 

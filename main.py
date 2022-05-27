@@ -149,7 +149,7 @@ def recommend():
     details = {names[index]:[ids[index], images[index], bdays[index], places[index], bios[index]] for index in range(len(places))}
     
     # web scraping to get user reviews from IMDB site
-    movie_reviews = {}
+    reviews_dict = {}
     if len(imdb_id) > 0:
         sauce = urllib.request.urlopen('https://www.imdb.com/title/{}/reviews?ref_=tt_ov_rt'.format(imdb_id)).read()
         soup = bs.BeautifulSoup(sauce,'lxml')
@@ -206,7 +206,6 @@ def create_user():
                     "username":request.form["username"],
                     "LikedMovie": request.form["LikedMovie"],
                     }
-                print(user)
                 dbResponse = db.user.insert_one(user)
                 session["username"] = request.form["username"]
                 return json.dumps({
