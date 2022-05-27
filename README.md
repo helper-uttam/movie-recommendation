@@ -1,8 +1,12 @@
 # Movie Recommendation System
-This application is based on **content based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror). 
+This application is based on **content based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror).  
 
 
 # Requriements
+
+**Highly Recommended**:
+
+According to my personal PC specification (windowsOS x64) all the requirements are listed in [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file. 
 ```
 - Python >= 3.8 
 - Flask == 1.1.1
@@ -29,9 +33,8 @@ This application is based on **content based filtering** and uses **cosine simil
 
 ## Required Credentials
 > MONGO_URL - Replace `__MONGO_URL__` with your Database collection url in *main.py* 
-> API_KEY  - Replace `__API_KEY__` with your own API KEY 4times in *recommend.js* file
 
-According to my personal PC specification (windowsOS x64) all the requirements are listed in [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file.  
+> API_KEY  - Replace `__API_KEY__` with your own API KEY 4times in *recommend.js* file
 
 **Suggestion (optional)** - Install [virtual environment](https://www.pythoncentral.io/how-to-install-virtualenv-python/) before installing the requirements.
 
