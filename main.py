@@ -1,7 +1,8 @@
 from flask import Flask, request, session, render_template 
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
 import pymongo
 import json
 from bson.objectid import ObjectId
@@ -11,7 +12,7 @@ import numpy as np
 import pickle
 # for Web Scrapping 
 import urllib.request
-import bs4 as bs
+import bs4 
 
 
 
@@ -22,7 +23,7 @@ app = Flask(__name__)
 ####### Connecting Database (MongoDB) #####
 ##############################################
 try:
-    mongo = pymongo.MongoClient('mongodb+srv://Uttam:QJLRGuIVeozVj7yQ@cluster0.axnkt.mongodb.net/?retryWrites=true&w=majority')
+    mongo = pymongo.MongoClient('__MONGO_URL__')
     db = mongo.user
     mongo.server_info()
 except Exception as e:
@@ -42,40 +43,41 @@ def get_movies():
     return list(orig_data['movie_title'].str.capitalize())
 
 
-def create_similarity():
-    orig_data = pd.read_csv('./datasets/processedData_2017.csv')
-    cv = CountVectorizer()
-    count_matrix = cv.fit_transform(orig_data['processedCol'])
-    similarity = cosine_similarity(count_matrix)
-    return orig_data,similarity
-
-
 def getRecommendedMoviesTitles(mov):
     mov = mov.lower()  #because all the data present in our dataset is in lower case
     try:
-        data.head()
-        similarity.shape
+        prediction.shape
+        data.head(5)
     except Exception as ex:
-        data, similarity = create_similarity()
+        data, prediction = create_similarity()
     # if the movie title that we are quering in createsimilarity didn't matched with any movie in our dataset
     if mov not in data['movie_title'].unique():
         return("Not present in CSV file")
     else:
         i = data.loc[data['movie_title']==mov].index[0]
-        lst = list(enumerate(similarity[i])) #indexing each similarity 
-        lst = sorted(lst, key = lambda x:x[1] ,reverse=True)
-        lst = lst[1:11] # excluding the first item because it is the requested movie itself
-        finalList = []
-        for i in range(len(lst)):
-            item = lst[i][0]
-            finalList.append(data['movie_title'][item])
-        return finalList
+        indexed_similarity = list(enumerate(prediction[i])) 
+        indexed_similarity = sorted(indexed_similarity, key = lambda x:x[1] ,reverse=True)
+        indexed_similarity = indexed_similarity[1:16] # excluding the first item because it is the requested movie itself
+        movie_items = []
+        for i in range(len(indexed_similarity)):
+            item = indexed_similarity[i][0]
+            movie_items.append(data['movie_title'][item])
+        return movie_items
 
-def stringToList(my_list):
-    my_list = my_list.split('","')
-    my_list[0] = my_list[0].replace('["','')
-    my_list[-1] = my_list[-1].replace('"]','')
-    return my_list    
+def stringToList(lst):
+    lst = lst.split('","')
+    lst[0] = lst[0].replace('["','')
+    lst[-1] = lst[-1].replace('"]','')
+    return lst    
+
+
+def create_similarity():
+    orig_data = pd.read_csv('./datasets/processedData_2017.csv')
+    convert_to_vectors = CountVectorizer()
+    vector_matrix = convert_to_vectors.fit_transform(orig_data['processedCol'])
+    prediction = cosine_similarity(vector_matrix)
+    return orig_data,prediction
+
 
 @app.route("/createsimilarity",methods=["POST"])
 def get_similarity():
@@ -151,7 +153,7 @@ def recommend():
     reviews_dict = {}
     if len(imdb_id) > 0:
         sauce = urllib.request.urlopen('https://www.imdb.com/title/{}/reviews?ref_=tt_ov_rt'.format(imdb_id)).read()
-        soup = bs.BeautifulSoup(sauce,'lxml')
+        soup = bs4.BeautifulSoup(sauce,'lxml')
         # after inspecting the imdb site, I saw that all the reviews are written inside text show-more__control class 
         soup_result = soup.find_all("div",{"class":"text show-more__control"})
 

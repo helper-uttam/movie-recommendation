@@ -4,13 +4,13 @@ new autoComplete({
     data: {                             
       src: movies,
     },
-    selector: "#autoComplete",                        
+    selector: "#input_autocomplete",                        
     resultsList: {                      
         render: true,
         container: source => {
             source.setAttribute("id", "searchAutocompleteItems");
         },
-        destination: document.querySelector("#autoComplete"),
+        destination: document.querySelector("#input_autocomplete"),
         position: "afterend", //after search bar
         element: "ul" //append elements as unordered list
     },
@@ -18,8 +18,8 @@ new autoComplete({
     highlight: true,  //matching keywords highlighting                     
     
     onSelection: item => {             
-        //setting the value property of #autoComplete 
+        //setting the value property of #input_autocomplete 
         // to access it while fetching movies data with its selected title
-        document.getElementById('autoComplete').value = item.selection.value;
+        document.getElementById('input_autocomplete').value = item.selection.value;
     }
 });

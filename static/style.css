@@ -105,8 +105,9 @@ h1 {
  }
 
 
-#autoComplete {
+#input_autocomplete {
   background-position: 98% ;
+  font-size: 2rem;
 }
 
 #name {
@@ -155,8 +156,9 @@ h6 {
 		height: 100%;
 	}
 
-	#autoComplete {
+	#input_autocomplete {
 	  background-position: 97% ;
+	  font-size: 2rem;
 	}
 	
 	svg[data-toggle=tooltip] {
