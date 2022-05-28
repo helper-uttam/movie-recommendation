@@ -1,12 +1,13 @@
 # Movie Recommendation System
-This application is based on **content based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror).  
+This application is based on **content-based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror).  
+Apart from this, using **sentiment analysis** has been performed on reviews. 
 
 
 # Requriements
 
 **Highly Recommended**:
 
-According to my personal PC specification (windowsOS x64) all the requirements are listed in [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file. 
+According to my personal PC specification (windowsOS x64), all the requirements are listed in [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file. 
 ```
 - Python >= 3.8 
 - Flask == 1.1.1
@@ -34,11 +35,11 @@ According to my personal PC specification (windowsOS x64) all the requirements a
 ## Required Credentials
 > MONGO_URL - Replace `__MONGO_URL__` with your Database collection url in *main.py* 
 
-> API_KEY  - Replace `__API_KEY__` with your own API KEY 4times in *recommend.js* file
+> API_KEY  - Replace `__API_KEY__` with your own API KEY 4times in the *recommend.js* file
 
 **Suggestion (optional)** - Install [virtual environment](https://www.pythoncentral.io/how-to-install-virtualenv-python/) before installing the requirements.
 
-# Running into local machine:
+# Running into the local machine:
 Install all the requirements mentioned above or the requirements mentioned in the [requirements.txt](https://github.com/helper-uttam/movie-recommendation/blob/master/requirements.txt) file (recommended),
 by running 
 ```
@@ -51,4 +52,4 @@ Now after installing all the requirements, run
 python main.py
 ```
 
-Please ensure to have all the nessasary credentials, **MongoDB Collection URL** and the **API KEY**.
+Please ensure to have all the necessary credentials, **MongoDB Collection URL** and the **API KEY**.

@@ -27,8 +27,8 @@ $(document).ready(function() {
     }
   });
 });
-// initial data fetching after selecting any option from the login page
 
+// initial data fetching after selecting any option from the login page
 window.onload = () => {
   let user = localStorage.getItem('username')
   if(user){  
@@ -205,6 +205,7 @@ function prcessedDetails(movie_details,results,movie_title,API_KEY,movie_id, sho
   if(showOnlySimilarMovies == true){
     movie_title = ''
   }
+  //wrapping all the details in an object to send it to our flask recommendMovies endpoints
   details = {
       'title':movie_title,
       'id':movie_details.imdb_id,
