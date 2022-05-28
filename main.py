@@ -89,7 +89,6 @@ def get_similarity():
 
 
 @app.route("/home", methods=["GET"])
-# @app.route('/', methods=["GET"])
 def home():
     movies = get_movies()
     return render_template('home.html',movies=movies) # passing all the name of movies from our dataset to feed jQuery autocomplete feature
@@ -153,6 +152,7 @@ def recommend():
     if len(imdb_id) > 0:
         sauce = urllib.request.urlopen('https://www.imdb.com/title/{}/reviews?ref_=tt_ov_rt'.format(imdb_id)).read()
         soup = bs.BeautifulSoup(sauce,'lxml')
+        # after inspecting the imdb site, I saw that all the reviews are written inside text show-more__control class 
         soup_result = soup.find_all("div",{"class":"text show-more__control"})
 
         reviews_list = [] # list of reviews
@@ -202,18 +202,26 @@ def create_user():
         if request.method == 'POST':
             existing_user = db.user.find_one({'username': request.form["username"]})
             if existing_user is None:
+                # sign up
                 user = {
                     "username":request.form["username"],
                     "LikedMovie": request.form["LikedMovie"],
                     }
                 dbResponse = db.user.insert_one(user)
-                session["username"] = request.form["username"]
                 return json.dumps({
                     "message":"Data Inserted",
                     "MessageID":f"{dbResponse.inserted_id}",
                     "username":request.form["username"], 
                 })
             else:
+                # Log in
+                id = existing_user['_id']
+                session["username"] = request.form["username"]
+                updatedLikes = existing_user["LikedMovie"]  + request.form["LikedMovie"]
+                try:
+                    db.user.update_one({'_id': ObjectId(id)},{'$set':{"LikedMovie": updatedLikes}})
+                except Exception as e:
+                    print(e)  
                 return json.dumps({
                     "message":"User already exsist"
                 })
@@ -303,4 +311,4 @@ def delete_user():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

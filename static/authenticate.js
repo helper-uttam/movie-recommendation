@@ -48,12 +48,14 @@ async function handleSubmit (username) {
     success: function(mes){
       const resp = JSON.parse(mes)
       if(resp.message == "Data Inserted"){
-          console.log(resp)
+          //signup
           localStorage.setItem("username",username)
-          location.reload();
+          window.location = '/home'
       }else{
-        console.log(resp)
-        console.log("Cannot insert data");
+        //login
+        localStorage.setItem("username",username)
+        window.location = '/home'
+        console.log("Logging In");
       }
     },
     error: function(e){
