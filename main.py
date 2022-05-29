@@ -23,7 +23,8 @@ app = Flask(__name__)
 ####### Connecting Database (MongoDB) #####
 ##############################################
 try:
-    mongo = pymongo.MongoClient('__MONGO_URL__')
+    # this URL is only valid till the evaluation of this project
+    mongo = pymongo.MongoClient('mongodb+srv://Uttam:QJLRGuIVeozVj7yQ@cluster0.axnkt.mongodb.net/?retryWrites=true&w=majority')
     db = mongo.user
     mongo.server_info()
 except Exception as e:
