@@ -53,3 +53,6 @@ python main.py
 ```
 
 Please ensure to have all the necessary credentials, **MongoDB Collection URL** and the **API KEY**.
+
+# Hosting
+This application is hosted on `Heroku` using continous integration and deployment (CI/CD) pipeline.
