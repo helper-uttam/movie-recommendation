@@ -2,6 +2,8 @@
 This application is based on **content-based filtering** and uses **cosine similarity** to differentiate between multiple movies in multi-dimension space of vectors on the basis of all the different name of the casts , and the genres (eg: action, horror).  
 Apart from this, using **sentiment analysis** has been performed on reviews. 
 
+# DFD
+<img src="https://github.com/helper-uttam/movie-recommendation/blob/master/static/DFD.png?raw=true" alt="data flow diagram">
 
 # Requriements
 
