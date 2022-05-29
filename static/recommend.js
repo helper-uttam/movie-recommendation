@@ -327,6 +327,7 @@ function get_individual_cast(movie_cast,my_api_key) {
 // when clicked on any of the recommended movies
 function recommendSimilarMovies(e){
   var API_KEY = '__API_KEY__';
+
   var title_of_movie = e.getAttribute('title'); 
   searchMovieWithTitle(API_KEY,title_of_movie);
 }
